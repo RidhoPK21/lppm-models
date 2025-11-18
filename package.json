@@ -6,7 +6,7 @@
     "db:sync": "ts-node scripts/sync.ts",
     "db:backup": "ts-node scripts/backup.ts",
     "db:migrate": "ts-node scripts/migrate.ts",
-    "db:seed": "ts-node scripts/migrate.ts"
+    "db:seed": "ts-node scripts/seed.ts"
   },
   "keywords": [],
   "author": "",
