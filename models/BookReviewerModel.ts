@@ -4,10 +4,10 @@ import sequelize from "../utils/dbUtil";
 interface BookReviewerAttributes {
   id: number;
   book_submission_id: number;
-  reviewer_id: string; // UUID Dosen yang ditunjuk
-  review_note?: string; // Komentar penilaian
-  review_date?: Date; // Tanggal selesai menilai
-  status: "PENDING" | "COMPLETED" | "DECLINED"; // Status tugas review
+  reviewer_id: string; // Dosen yang ditunjuk (Wajib)
+  review_note?: string;
+  review_date?: Date;
+  status: "PENDING" | "COMPLETED" | "DECLINED";
 
   created_at?: Date;
   updated_at?: Date;
@@ -33,29 +33,11 @@ class BookReviewerModel
 
 BookReviewerModel.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    book_submission_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      comment: "ID Buku yang dinilai",
-    },
-    reviewer_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      comment: "User ID dosen yang diminta me-review",
-    },
-    review_note: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    review_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    book_submission_id: { type: DataTypes.INTEGER, allowNull: false },
+    reviewer_id: { type: DataTypes.UUID, allowNull: false },
+    review_note: { type: DataTypes.TEXT, allowNull: true },
+    review_date: { type: DataTypes.DATE, allowNull: true },
     status: {
       type: DataTypes.ENUM("PENDING", "COMPLETED", "DECLINED"),
       defaultValue: "PENDING",

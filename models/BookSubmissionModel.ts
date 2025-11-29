@@ -1,19 +1,22 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
-// Atribut TypeScript Interface
 interface BookSubmissionAttributes {
   id: number;
-  user_id: string; // Dosen Pengaju (UUID)
+  user_id: string; // Pengaju
   title: string;
-  isbn: string; // Syarat Mutlak (Pedoman)
+  isbn: string;
   publication_year: number;
   publisher: string;
-  publisher_level: "NATIONAL" | "INTERNATIONAL" | "NATIONAL_ACCREDITED"; // Penentu Reward
-  book_type: "TEACHING" | "REFERENCE" | "MONOGRAPH" | "CHAPTER"; // Penentu Reward
-  total_pages: number; // Validasi (Monograf min 40 hal)
-  file_path: string; // Bukti Fisik (Cover, Daftar Isi) - bisa null
-  drive_link?: string; // Link Softcopy (JSON String 5 Link) - TEXT
+  publisher_level: "NATIONAL" | "INTERNATIONAL" | "NATIONAL_ACCREDITED";
+  book_type: "TEACHING" | "REFERENCE" | "MONOGRAPH" | "CHAPTER";
+  total_pages: number;
+
+  // Kolom Krusial
+  drive_link?: string; // JSON String untuk Link Dokumen
+  approved_amount?: number; // Nominal dari Ketua/HRD
+  payment_date?: Date; // Jadwal Cair dari HRD
+
   status:
     | "DRAFT"
     | "SUBMITTED"
@@ -22,13 +25,11 @@ interface BookSubmissionAttributes {
     | "APPROVED_CHIEF"
     | "REJECTED"
     | "PAID";
-  approved_amount?: number; // Nominal final yang disetujui
 
   created_at?: Date;
   updated_at?: Date;
 }
 
-// Interface untuk Creation (id opsional karena auto-increment)
 interface BookSubmissionCreationAttributes
   extends Optional<BookSubmissionAttributes, "id"> {}
 
@@ -45,8 +46,11 @@ class BookSubmissionModel
   public publisher_level!: "NATIONAL" | "INTERNATIONAL" | "NATIONAL_ACCREDITED";
   public book_type!: "TEACHING" | "REFERENCE" | "MONOGRAPH" | "CHAPTER";
   public total_pages!: number;
-  public file_path!: string;
+
   public drive_link!: string;
+  public approved_amount!: number;
+  public payment_date!: Date;
+
   public status!:
     | "DRAFT"
     | "SUBMITTED"
@@ -55,7 +59,6 @@ class BookSubmissionModel
     | "APPROVED_CHIEF"
     | "REJECTED"
     | "PAID";
-  public approved_amount!: number;
 
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
@@ -63,56 +66,31 @@ class BookSubmissionModel
 
 BookSubmissionModel.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    user_id: {
-      type: DataTypes.UUID, // UUID Sesuai HakAksesModel
-      allowNull: false,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    isbn: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      validate: { notEmpty: true },
-    },
-    publication_year: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    publisher: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    user_id: { type: DataTypes.UUID, allowNull: false },
+    title: { type: DataTypes.STRING, allowNull: false },
+    isbn: { type: DataTypes.STRING(50), allowNull: false },
+    publication_year: { type: DataTypes.INTEGER, allowNull: false },
+    publisher: { type: DataTypes.STRING, allowNull: false },
     publisher_level: {
       type: DataTypes.ENUM("NATIONAL", "INTERNATIONAL", "NATIONAL_ACCREDITED"),
       allowNull: false,
-      comment: "Menentukan besaran insentif sesuai Tabel Pedoman",
     },
     book_type: {
       type: DataTypes.ENUM("TEACHING", "REFERENCE", "MONOGRAPH", "CHAPTER"),
       allowNull: false,
-      comment: "Jenis buku menentukan kategori penghargaan",
     },
-    total_pages: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      comment: "Digunakan untuk validasi kriteria tebal buku (min 40 hal)",
-    },
-    file_path: {
-      type: DataTypes.STRING, // Path local untuk file kecil (bukti)
-      allowNull: true,
-    },
+    total_pages: { type: DataTypes.INTEGER, allowNull: false },
+
+    // Fitur Utama
     drive_link: {
-      // [PENTING] Ubah jadi TEXT agar muat menampung JSON string panjang (5 link)
       type: DataTypes.TEXT,
       allowNull: true,
+      comment: "JSON String Link Google Drive",
     },
+    approved_amount: { type: DataTypes.DECIMAL(15, 2), allowNull: true },
+    payment_date: { type: DataTypes.DATEONLY, allowNull: true },
+
     status: {
       type: DataTypes.ENUM(
         "DRAFT",
@@ -125,16 +103,12 @@ BookSubmissionModel.init(
       ),
       defaultValue: "DRAFT",
     },
-    approved_amount: {
-      type: DataTypes.DECIMAL(15, 2),
-      allowNull: true, // Diisi oleh Ketua LPPM/HRD saat approve
-    },
   },
   {
     sequelize,
-    tableName: "book_submissions", // Standar SDI: Plural & Snake Case
+    tableName: "book_submissions",
     timestamps: true,
-    underscored: true, // Standar SDI: created_at, updated_at
+    underscored: true,
   }
 );
 

@@ -4,9 +4,9 @@ import sequelize from "../utils/dbUtil";
 interface SubmissionLogAttributes {
   id: number;
   book_submission_id: number;
-  user_id: string; // Siapa yang melakukan aksi
-  action: string; // SUBMIT, APPROVE, REJECT, COMMENT
-  note?: string; // Catatan revisi/alasan penolakan
+  user_id: string; // Siapa pelakunya?
+  action: "SUBMIT" | "VERIFY" | "REJECT" | "APPROVE" | "COMMENT" | "PAID";
+  note?: string; // Catatan revisi/alasan
 
   created_at?: Date;
   updated_at?: Date;
@@ -22,7 +22,13 @@ class SubmissionLogModel
   public id!: number;
   public book_submission_id!: number;
   public user_id!: string;
-  public action!: string;
+  public action!:
+    | "SUBMIT"
+    | "VERIFY"
+    | "REJECT"
+    | "APPROVE"
+    | "COMMENT"
+    | "PAID";
   public note!: string;
 
   public readonly created_at!: Date;
@@ -31,31 +37,18 @@ class SubmissionLogModel
 
 SubmissionLogModel.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    book_submission_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    user_id: {
-      type: DataTypes.UUID, // Atau DataTypes.UUID
-      allowNull: true,
-    },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    book_submission_id: { type: DataTypes.INTEGER, allowNull: false },
+    user_id: { type: DataTypes.UUID, allowNull: false },
     action: {
-      type: DataTypes.STRING, // Contoh: 'VERIFIED_BY_STAFF', 'REJECTED_BY_CHIEF'
+      type: DataTypes.STRING(50), // Menggunakan String agar fleksibel jika ada aksi baru
       allowNull: false,
     },
-    note: {
-      type: DataTypes.TEXT,
-      allowNull: true, // Catatan opsional, tapi wajib jika REJECT/REVISION
-    },
+    note: { type: DataTypes.TEXT, allowNull: true },
   },
   {
     sequelize,
-    tableName: "submission_logs", // Standar SDI: Plural
+    tableName: "submission_logs",
     timestamps: true,
     underscored: true,
   }
