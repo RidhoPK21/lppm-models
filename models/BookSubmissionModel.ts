@@ -14,8 +14,10 @@ interface BookSubmissionAttributes {
 
   // Kolom Krusial
   drive_link?: string; // JSON String untuk Link Dokumen
+  pdf_path?: string; // Path file PDF yang tersimpan
   approved_amount?: number; // Nominal dari Ketua/HRD
   payment_date?: Date; // Jadwal Cair dari HRD
+  reject_note?: string; // Catatan penolakan dari Reviewer/HRD
 
   status:
     | "DRAFT"
@@ -48,8 +50,10 @@ class BookSubmissionModel
   public total_pages!: number;
 
   public drive_link!: string;
+  public pdf_path!: string;
   public approved_amount!: number;
   public payment_date!: Date;
+  public reject_note!: string;
 
   public status!:
     | "DRAFT"
@@ -88,8 +92,14 @@ BookSubmissionModel.init(
       allowNull: true,
       comment: "JSON String Link Google Drive",
     },
+    pdf_path: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Path file PDF surat permohonan",
+    },
     approved_amount: { type: DataTypes.DECIMAL(15, 2), allowNull: true },
     payment_date: { type: DataTypes.DATEONLY, allowNull: true },
+    reject_note: { type: DataTypes.TEXT, allowNull: true },
 
     status: {
       type: DataTypes.ENUM(

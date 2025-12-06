@@ -11,6 +11,9 @@ import SubmissionLogModel from "./SubmissionLogModel";
 import BookReviewerModel from "./BookReviewerModel";
 import NotificationModel from "./NotificationModel";
 
+// Import Profile
+import ProfileModel from "./ProfileModel";
+
 // --- RELASI (ASSOCIATIONS) ---
 
 // 1. Buku <-> Penulis
@@ -53,6 +56,7 @@ const models: ModelStatic<Model<any, any>>[] = [
   SubmissionLogModel,
   BookReviewerModel,
   NotificationModel,
+  ProfileModel, // <-- DITAMBAHKAN
 ];
 
 export {
@@ -63,6 +67,7 @@ export {
   SubmissionLogModel,
   BookReviewerModel,
   NotificationModel,
+  ProfileModel, // <-- DITAMBAHKAN
 };
 
 export default models;
