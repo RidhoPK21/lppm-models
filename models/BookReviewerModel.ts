@@ -71,7 +71,7 @@ BookReviewerModel.init(
       type: DataTypes.ENUM("PENDING", "ACCEPTED", "REJECTED"),
       defaultValue: "PENDING",
       allowNull: false,
-      comment: "Status undangan Reviewer",
+      // comment: "Status undangan Reviewer", 
     },
     reviewed_at: {
       type: DataTypes.DATE,

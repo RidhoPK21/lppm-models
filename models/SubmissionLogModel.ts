@@ -5,7 +5,17 @@ interface SubmissionLogAttributes {
   id: string; // ✅ Diubah menjadi string (UUID)
   book_submission_id: string;
   user_id: string; // Siapa pelakunya?
-  action: "SUBMIT" | "VERIFY" | "REJECT" | "APPROVE" | "COMMENT" | "PAID";
+  // ✅ Disesuaikan untuk mengakomodasi nilai historis yang ada di database
+  action:
+    | "SUBMIT"
+    | "VERIFY"
+    | "REJECT"
+    | "APPROVE"
+    | "COMMENT"
+    | "PAID"
+    | "CREATE_DRAFT"
+    | "PAYMENT_DISBURSED"
+    | "UPLOAD_DOCUMENTS";
   note?: string; // Catatan revisi/alasan
 
   created_at?: Date;
@@ -25,13 +35,17 @@ class SubmissionLogModel
   public id!: string; // ✅ Diubah menjadi string
   public book_submission_id!: string;
   public user_id!: string;
+  // ✅ Disesuaikan untuk mengakomodasi nilai historis yang ada di database
   public action!:
     | "SUBMIT"
     | "VERIFY"
     | "REJECT"
     | "APPROVE"
     | "COMMENT"
-    | "PAID";
+    | "PAID"
+    | "CREATE_DRAFT"
+    | "PAYMENT_DISBURSED"
+    | "UPLOAD_DOCUMENTS";
   public note!: string;
 
   public readonly created_at!: Date;
@@ -47,7 +61,7 @@ SubmissionLogModel.init(
       // autoIncrement dihapus
     },
     book_submission_id: { type: DataTypes.UUID, allowNull: false },
-    
+
     user_id: { type: DataTypes.UUID, allowNull: false },
     action: {
       type: DataTypes.ENUM(
@@ -56,7 +70,10 @@ SubmissionLogModel.init(
         "REJECT",
         "APPROVE",
         "COMMENT",
-        "PAID"
+        "PAID",
+        "CREATE_DRAFT", // <-- DITAMBAHKAN
+        "PAYMENT_DISBURSED", // <-- DITAMBAHKAN
+        "UPLOAD_DOCUMENTS" // <-- DITAMBAHKAN
       ), // ✅ Diubah kembali ke ENUM agar lebih terkontrol
       allowNull: false,
     },

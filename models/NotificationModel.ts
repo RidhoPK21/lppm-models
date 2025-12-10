@@ -58,7 +58,7 @@ NotificationModel.init(
     type: {
       type: DataTypes.ENUM("Info", "Sukses", "Peringatan", "Error", "System"),
       allowNull: false,
-      //defaultValue: "Info",
+      defaultValue: "Info",
     },
     is_read: {
       type: DataTypes.BOOLEAN,
