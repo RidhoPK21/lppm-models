@@ -2,27 +2,37 @@ import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
 interface BookReviewerAttributes {
-  id: number;
-  book_submission_id: number;
+  id: string; // ✅ Diubah menjadi string (UUID)
+  book_submission_id: string;
   user_id: string;
-  note?: string; // UBAH dari review_note ke note
-  status: "PENDING" | "ACCEPTED" | "REJECTED"; // UBAH status values
-  reviewed_at?: Date; // UBAH dari review_date ke reviewed_at
-  invited_by?: string; // TAMBAH field baru
-  invited_at?: Date; // TAMBAH field baru
+  note?: string;
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
+  reviewed_at?: Date;
+  invited_by?: string;
+  invited_at?: Date;
+
   created_at?: Date;
   updated_at?: Date;
 }
 
 interface BookReviewerCreationAttributes
-  extends Optional<BookReviewerAttributes, "id" | "note" | "reviewed_at" | "invited_by" | "invited_at"> {}
+  extends Optional<
+    BookReviewerAttributes,
+    | "id"
+    | "note"
+    | "reviewed_at"
+    | "invited_by"
+    | "invited_at"
+    | "created_at"
+    | "updated_at"
+  > {}
 
 class BookReviewerModel
   extends Model<BookReviewerAttributes, BookReviewerCreationAttributes>
   implements BookReviewerAttributes
 {
-  public id!: number;
-  public book_submission_id!: number;
+  public id!: string; // ✅ Diubah menjadi string
+  public book_submission_id!: string;
   public user_id!: string;
   public note!: string;
   public status!: "PENDING" | "ACCEPTED" | "REJECTED";
@@ -36,39 +46,47 @@ class BookReviewerModel
 
 BookReviewerModel.init(
   {
-    id: { 
-      type: DataTypes.INTEGER, 
-      autoIncrement: true, 
-      primaryKey: true 
+    id: {
+      type: DataTypes.UUID, // ✅ Tipe diubah menjadi UUID
+      defaultValue: DataTypes.UUIDV4, // ✅ Ditambahkan untuk generate UUID otomatis
+      primaryKey: true,
+      // autoIncrement dihapus karena tidak berlaku untuk UUID
     },
-    book_submission_id: { 
-      type: DataTypes.INTEGER, 
-      allowNull: false 
+    book_submission_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      comment: "ID Pengajuan Buku",
     },
-    user_id: { 
-      type: DataTypes.UUID, 
-      allowNull: false 
+    user_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      comment: "ID Reviewer (Dosen Internal)",
     },
-    note: { 
-      type: DataTypes.TEXT, 
-      allowNull: true 
+    note: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: "Catatan/Review dari Reviewer",
     },
     status: {
       type: DataTypes.ENUM("PENDING", "ACCEPTED", "REJECTED"),
       defaultValue: "PENDING",
-      allowNull: false
+      allowNull: false,
+      comment: "Status undangan Reviewer",
     },
-    reviewed_at: { 
-      type: DataTypes.DATE, 
-      allowNull: true 
+    reviewed_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "Tanggal/waktu Review selesai",
     },
-    invited_by: { 
-      type: DataTypes.UUID, 
-      allowNull: true 
+    invited_by: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      comment: "ID User yang mengundang Reviewer",
     },
-    invited_at: { 
-      type: DataTypes.DATE, 
-      allowNull: true 
+    invited_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "Tanggal/waktu Reviewer diundang",
     },
   },
   {

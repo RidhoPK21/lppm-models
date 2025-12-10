@@ -2,7 +2,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
 interface NotificationAttributes {
-  id: number;
+  id: string; // ✅ Diubah menjadi string (UUID)
   user_id: string;
   title: string;
   message: string;
@@ -13,14 +13,17 @@ interface NotificationAttributes {
   updated_at?: Date;
 }
 
-interface NotificationCreationAttributes 
-  extends Optional<NotificationAttributes, "id" | "is_read" | "reference_key"> {}
+interface NotificationCreationAttributes
+  extends Optional<
+    NotificationAttributes,
+    "id" | "is_read" | "reference_key" | "created_at" | "updated_at" // ✅ 'id' ditambahkan di sini
+  > {}
 
 class NotificationModel
   extends Model<NotificationAttributes, NotificationCreationAttributes>
   implements NotificationAttributes
 {
-  public id!: number;
+  public id!: string; // ✅ Diubah menjadi string
   public user_id!: string;
   public title!: string;
   public message!: string;
@@ -33,54 +36,54 @@ class NotificationModel
 
 NotificationModel.init(
   {
-    id: { 
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true 
+    id: {
+      type: DataTypes.UUID, // ✅ Tipe diubah menjadi UUID
+      defaultValue: DataTypes.UUIDV4, // ✅ Ditambahkan untuk generate UUID otomatis
+      primaryKey: true,
+      // autoIncrement dihapus
     },
-    user_id: { 
+    user_id: {
       type: DataTypes.UUID,
       allowNull: false,
-      field: "user_id"
+      field: "user_id",
     },
-    title: { 
+    title: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
     },
-    message: { 
+    message: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
     },
     type: {
       type: DataTypes.ENUM("Info", "Sukses", "Peringatan", "Error", "System"),
       allowNull: false,
-      defaultValue: "Info"
+      //defaultValue: "Info",
     },
     is_read: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: "is_read"
+      field: "is_read",
     },
     reference_key: {
       type: DataTypes.STRING(255),
       allowNull: true,
-     
       field: "reference_key",
-      comment: "Unique key untuk mencegah duplikasi notifikasi"
+      comment: "Unique key untuk mencegah duplikasi notifikasi",
     },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
-      field: "created_at"
+      field: "created_at",
     },
     updated_at: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
-      field: "updated_at"
-    }
+      field: "updated_at",
+    },
   },
   {
     sequelize,
@@ -88,7 +91,7 @@ NotificationModel.init(
     timestamps: true,
     underscored: true,
     createdAt: "created_at",
-    updatedAt: "updated_at"
+    updatedAt: "updated_at",
   }
 );
 
