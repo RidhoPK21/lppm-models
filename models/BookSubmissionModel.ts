@@ -3,7 +3,7 @@ import sequelize from "../utils/dbUtil";
 
 interface BookSubmissionAttributes {
   id: number;
-  user_id: string; // Pengaju
+  user_id: string;
   title: string;
   isbn: string;
   publication_year: number;
@@ -11,14 +11,12 @@ interface BookSubmissionAttributes {
   publisher_level: "NATIONAL" | "INTERNATIONAL" | "NATIONAL_ACCREDITED";
   book_type: "TEACHING" | "REFERENCE" | "MONOGRAPH" | "CHAPTER";
   total_pages: number;
-
-  // Kolom Krusial
-  drive_link?: string; // JSON String untuk Link Dokumen
-  pdf_path?: string; // Path file PDF yang tersimpan
-  approved_amount?: number; // Nominal dari Ketua/HRD
-  payment_date?: Date; // Jadwal Cair dari HRD
-  reject_note?: string; // Catatan penolakan dari Reviewer/HRD
-
+  drive_link?: string | null;
+  pdf_path?: string | null;
+  approved_amount?: number | null;
+  payment_date?: Date | null;
+  reject_note?: string | null;
+  rejected_by?: string | null;
   status:
     | "DRAFT"
     | "SUBMITTED"
@@ -27,13 +25,12 @@ interface BookSubmissionAttributes {
     | "APPROVED_CHIEF"
     | "REJECTED"
     | "PAID";
-
   created_at?: Date;
   updated_at?: Date;
 }
 
 interface BookSubmissionCreationAttributes
-  extends Optional<BookSubmissionAttributes, "id"> {}
+  extends Optional<BookSubmissionAttributes, "id" | "drive_link" | "pdf_path" | "approved_amount" | "payment_date" | "reject_note" | "rejected_by"> {}
 
 class BookSubmissionModel
   extends Model<BookSubmissionAttributes, BookSubmissionCreationAttributes>
@@ -48,13 +45,12 @@ class BookSubmissionModel
   public publisher_level!: "NATIONAL" | "INTERNATIONAL" | "NATIONAL_ACCREDITED";
   public book_type!: "TEACHING" | "REFERENCE" | "MONOGRAPH" | "CHAPTER";
   public total_pages!: number;
-
-  public drive_link!: string;
-  public pdf_path!: string;
-  public approved_amount!: number;
-  public payment_date!: Date;
-  public reject_note!: string;
-
+  public drive_link?: string | null;
+  public pdf_path?: string | null;
+  public approved_amount?: number | null;
+  public payment_date?: Date | null;
+  public reject_note?: string | null;
+  public rejected_by?: string | null;
   public status!:
     | "DRAFT"
     | "SUBMITTED"
@@ -63,7 +59,6 @@ class BookSubmissionModel
     | "APPROVED_CHIEF"
     | "REJECTED"
     | "PAID";
-
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
 }
@@ -85,22 +80,39 @@ BookSubmissionModel.init(
       allowNull: false,
     },
     total_pages: { type: DataTypes.INTEGER, allowNull: false },
-
-    // Fitur Utama
     drive_link: {
       type: DataTypes.TEXT,
       allowNull: true,
+      defaultValue: null,
       comment: "JSON String Link Google Drive",
     },
     pdf_path: {
       type: DataTypes.STRING,
       allowNull: true,
+      defaultValue: null,
       comment: "Path file PDF surat permohonan",
     },
-    approved_amount: { type: DataTypes.DECIMAL(15, 2), allowNull: true },
-    payment_date: { type: DataTypes.DATEONLY, allowNull: true },
-    reject_note: { type: DataTypes.TEXT, allowNull: true },
-
+    approved_amount: { 
+      type: DataTypes.DECIMAL(15, 2), 
+      allowNull: true,
+      defaultValue: null
+    },
+    payment_date: { 
+      type: DataTypes.DATEONLY, 
+      allowNull: true,
+      defaultValue: null
+    },
+    reject_note: { 
+      type: DataTypes.TEXT, 
+      allowNull: true,
+      defaultValue: null
+    },
+    rejected_by: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      defaultValue: null,
+      comment: "User ID yang menolak (Staff/Ketua LPPM)",
+    },
     status: {
       type: DataTypes.ENUM(
         "DRAFT",
