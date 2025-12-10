@@ -17,7 +17,6 @@ async function seedDB(): Promise<void> {
 
     // Daftar ID yang harus disinkronkan dengan Laravel
     const users = [
-      //{ id: "12e091b8-f227-4a58-8061-dc4a100c60f1", role: "DOSEN" }, // Abdullah Ubaid
       { id: "22e091b8-f227-4a58-8061-dc4a100c60f2", role: "DOSEN" }, // Budi
       { id: "33e091b8-f227-4a58-8061-dc4a100c60f3", role: "DOSEN" }, // Siti
       { id: "44e091b8-f227-4a58-8061-dc4a100c60f4", role: "DOSEN" }, // Rahmat

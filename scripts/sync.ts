@@ -10,12 +10,7 @@ async function syncDB(): Promise<void> {
     // GANTI destroy dengan drop. Drop akan menghapus tabel lama,
     // memungkinkan db.sync({ alter: true }) untuk membuat ulang tabel
     // 'profiles' dengan tipe data UUID yang benar.
-    await ProfileModel.drop({ cascade: true });
-    console.log(
-      "Tabel 'profiles' lama telah dihapus untuk memungkinkan pembuatan ulang skema UUID."
-    );
-    // -------------------------------------------------------
-
+    
     // Sinkronisasi database
     await db.sync({ alter: true });
     console.log("Berhasil melakukan sinkronisasi database.");
