@@ -2,20 +2,10 @@ import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
 interface SubmissionLogAttributes {
-  id: string; // ✅ Diubah menjadi string (UUID)
-  book_submission_id: string;
+  id: number;
+  book_submission_id: number;
   user_id: string; // Siapa pelakunya?
-  // ✅ Disesuaikan untuk mengakomodasi nilai historis yang ada di database
-  action:
-    | "SUBMIT"
-    | "VERIFY"
-    | "REJECT"
-    | "APPROVE"
-    | "COMMENT"
-    | "PAID"
-    | "CREATE_DRAFT"
-    | "PAYMENT_DISBURSED"
-    | "UPLOAD_DOCUMENTS";
+  action: "SUBMIT" | "VERIFY" | "REJECT" | "APPROVE" | "COMMENT" | "PAID";
   note?: string; // Catatan revisi/alasan
 
   created_at?: Date;
@@ -23,29 +13,22 @@ interface SubmissionLogAttributes {
 }
 
 interface SubmissionLogCreationAttributes
-  extends Optional<
-    SubmissionLogAttributes,
-    "id" | "note" | "created_at" | "updated_at"
-  > {} // ✅ 'id' sekarang optional karena auto-generate
+  extends Optional<SubmissionLogAttributes, "id"> {}
 
 class SubmissionLogModel
   extends Model<SubmissionLogAttributes, SubmissionLogCreationAttributes>
   implements SubmissionLogAttributes
 {
-  public id!: string; // ✅ Diubah menjadi string
-  public book_submission_id!: string;
+  public id!: number;
+  public book_submission_id!: number;
   public user_id!: string;
-  // ✅ Disesuaikan untuk mengakomodasi nilai historis yang ada di database
   public action!:
     | "SUBMIT"
     | "VERIFY"
     | "REJECT"
     | "APPROVE"
     | "COMMENT"
-    | "PAID"
-    | "CREATE_DRAFT"
-    | "PAYMENT_DISBURSED"
-    | "UPLOAD_DOCUMENTS";
+    | "PAID";
   public note!: string;
 
   public readonly created_at!: Date;
@@ -54,27 +37,11 @@ class SubmissionLogModel
 
 SubmissionLogModel.init(
   {
-    id: {
-      type: DataTypes.UUID, // ✅ Tipe diubah menjadi UUID
-      defaultValue: DataTypes.UUIDV4, // ✅ Ditambahkan untuk generate UUID otomatis
-      primaryKey: true,
-      // autoIncrement dihapus
-    },
-    book_submission_id: { type: DataTypes.UUID, allowNull: false },
-
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    book_submission_id: { type: DataTypes.INTEGER, allowNull: false },
     user_id: { type: DataTypes.UUID, allowNull: false },
     action: {
-      type: DataTypes.ENUM(
-        "SUBMIT",
-        "VERIFY",
-        "REJECT",
-        "APPROVE",
-        "COMMENT",
-        "PAID",
-        "CREATE_DRAFT", // <-- DITAMBAHKAN
-        "PAYMENT_DISBURSED", // <-- DITAMBAHKAN
-        "UPLOAD_DOCUMENTS" // <-- DITAMBAHKAN
-      ), // ✅ Diubah kembali ke ENUM agar lebih terkontrol
+      type: DataTypes.STRING(50), // Menggunakan String agar fleksibel jika ada aksi baru
       allowNull: false,
     },
     note: { type: DataTypes.TEXT, allowNull: true },

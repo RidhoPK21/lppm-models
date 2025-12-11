@@ -2,8 +2,8 @@ import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
 interface BookAuthorAttributes {
-  id: string; // Tipe data diubah menjadi string (UUID)
-  book_submission_id: string;
+  id: number;
+  book_submission_id: number;
   user_id?: string; // Jika Dosen Internal (Optional)
   name: string; // Wajib (Nama Dosen atau Nama Orang Luar)
   role: "FIRST" | "MEMBER" | "CORRESPONDING";
@@ -13,17 +13,15 @@ interface BookAuthorAttributes {
   updated_at?: Date;
 }
 
-// Menghapus 'id' dari tipe Optional karena sekarang kita akan
-// menghasilkan UUID secara otomatis di definisi kolom
 interface BookAuthorCreationAttributes
-  extends Optional<BookAuthorAttributes, "created_at" | "updated_at"> {}
+  extends Optional<BookAuthorAttributes, "id"> {}
 
 class BookAuthorModel
   extends Model<BookAuthorAttributes, BookAuthorCreationAttributes>
   implements BookAuthorAttributes
 {
-  public id!: string; // Tipe data diubah menjadi string
-  public book_submission_id!: string;
+  public id!: number;
+  public book_submission_id!: number;
   public user_id!: string;
   public name!: string;
   public role!: "FIRST" | "MEMBER" | "CORRESPONDING";
@@ -35,14 +33,8 @@ class BookAuthorModel
 
 BookAuthorModel.init(
   {
-    id: {
-      type: DataTypes.UUID, // Menggunakan tipe UUID
-      defaultValue: DataTypes.UUIDV4, // Menghasilkan UUID secara otomatis
-      primaryKey: true,
-      // Hapus autoIncrement karena tidak berlaku untuk UUID
-    },
-    book_submission_id: { type: DataTypes.UUID, allowNull: false },
-
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    book_submission_id: { type: DataTypes.INTEGER, allowNull: false },
     user_id: {
       type: DataTypes.UUID,
       allowNull: true,

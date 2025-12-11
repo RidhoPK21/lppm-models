@@ -2,7 +2,7 @@ import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
 interface ProfileAttributes {
-  id: string; // ✅ Diubah menjadi string (UUID)
+  id: number;
   user_id: string;
   name?: string | null;
 
@@ -15,14 +15,13 @@ interface ProfileAttributes {
   updated_at?: Date;
 }
 
-interface ProfileCreationAttributes
-  extends Optional<ProfileAttributes, "id" | "created_at" | "updated_at"> {} // ✅ 'id' sekarang optional karena auto-generate
+interface ProfileCreationAttributes extends Optional<ProfileAttributes, "id"> {}
 
 class ProfileModel
   extends Model<ProfileAttributes, ProfileCreationAttributes>
   implements ProfileAttributes
 {
-  public id!: string; // ✅ Diubah menjadi string
+  public id!: number;
   public user_id!: string;
   public name!: string | null;
 
@@ -37,25 +36,24 @@ class ProfileModel
 
 ProfileModel.init(
   {
-    id: {
-      type: DataTypes.UUID, // ✅ Tipe diubah menjadi UUID
-      defaultValue: DataTypes.UUIDV4, // ✅ Ditambahkan untuk generate UUID otomatis
-      primaryKey: true,
-      // autoIncrement dihapus
+    id: { 
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true 
     },
 
-    user_id: {
-      type: DataTypes.UUID, // ✅ Tipe diubah menjadi UUID (asumsi konsistensi dengan model lain)
+    user_id: { 
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      field: "user_id",
+      field: "user_id"
     },
 
-    name: {
+    name: { 
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
-      field: "name",
+      field: "name"
     },
 
     // ------------ INFORMASI AKADEMIK ----------------
@@ -64,45 +62,45 @@ ProfileModel.init(
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
-      field: "nidn",
+      field: "nidn"
     },
 
     Prodi: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
-      field: "prodi",
+      field: "prodi"
     },
 
     SintaID: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
-      field: "sinta_id",
+      field: "sinta_id"
     },
 
     ScopusID: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: null,
-      field: "scopus_id",
+      field: "scopus_id"
     },
 
     created_at: {
       type: DataTypes.DATE,
-      field: "created_at",
+      field: "created_at"
     },
 
     updated_at: {
       type: DataTypes.DATE,
-      field: "updated_at",
-    },
+      field: "updated_at"
+    }
   },
   {
     sequelize,
     tableName: "profiles",
     timestamps: true,
-    underscored: true,
+    underscored: true
   }
 );
 
