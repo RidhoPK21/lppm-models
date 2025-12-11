@@ -12,7 +12,7 @@ async function syncDB(): Promise<void> {
     // 'profiles' dengan tipe data UUID yang benar.
     
     // Sinkronisasi database
-    await db.sync({ alter: true });
+    await db.sync({ force: true });
     console.log("Berhasil melakukan sinkronisasi database.");
   } catch (error) {
     console.error("Gagal melakukan sinkronisasi database: ", error);

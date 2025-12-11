@@ -1,8 +1,8 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
 interface BookSubmissionAttributes {
-  id: number;
+  id: string; // UBAH: number -> string (UUID)
   user_id: string;
   title: string;
   isbn: string;
@@ -30,13 +30,22 @@ interface BookSubmissionAttributes {
 }
 
 interface BookSubmissionCreationAttributes
-  extends Optional<BookSubmissionAttributes, "id" | "drive_link" | "pdf_path" | "approved_amount" | "payment_date" | "reject_note" | "rejected_by"> {}
+  extends Optional<
+    BookSubmissionAttributes,
+    | "id"
+    | "drive_link"
+    | "pdf_path"
+    | "approved_amount"
+    | "payment_date"
+    | "reject_note"
+    | "rejected_by"
+  > {}
 
 class BookSubmissionModel
   extends Model<BookSubmissionAttributes, BookSubmissionCreationAttributes>
   implements BookSubmissionAttributes
 {
-  public id!: number;
+  public id!: string; // UBAH: number -> string
   public user_id!: string;
   public title!: string;
   public isbn!: string;
@@ -65,7 +74,11 @@ class BookSubmissionModel
 
 BookSubmissionModel.init(
   {
-    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    id: {
+      type: DataTypes.UUID, // UBAH: INTEGER -> UUID
+      defaultValue: DataTypes.UUIDV4, // TAMBAH: Auto-generate UUID
+      primaryKey: true,
+    },
     user_id: { type: DataTypes.UUID, allowNull: false },
     title: { type: DataTypes.STRING, allowNull: false },
     isbn: { type: DataTypes.STRING(50), allowNull: false },
@@ -92,20 +105,20 @@ BookSubmissionModel.init(
       defaultValue: null,
       comment: "Path file PDF surat permohonan",
     },
-    approved_amount: { 
-      type: DataTypes.DECIMAL(15, 2), 
+    approved_amount: {
+      type: DataTypes.DECIMAL(15, 2),
       allowNull: true,
-      defaultValue: null
+      defaultValue: null,
     },
-    payment_date: { 
-      type: DataTypes.DATEONLY, 
+    payment_date: {
+      type: DataTypes.DATEONLY,
       allowNull: true,
-      defaultValue: null
+      defaultValue: null,
     },
-    reject_note: { 
-      type: DataTypes.TEXT, 
+    reject_note: {
+      type: DataTypes.TEXT,
       allowNull: true,
-      defaultValue: null
+      defaultValue: null,
     },
     rejected_by: {
       type: DataTypes.UUID,

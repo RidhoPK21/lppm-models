@@ -12,7 +12,7 @@ async function seedDB(): Promise<void> {
     await HakAksesModel.create({
       id: user_id,
       user_id: user_id,
-      akses: "Admin",
+      akses: "Admin,Lppm Ketua",
     });
 
     // Daftar ID yang harus disinkronkan dengan Laravel

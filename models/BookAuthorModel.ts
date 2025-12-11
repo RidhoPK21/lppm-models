@@ -1,13 +1,13 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional, UUIDV4 } from "sequelize";
 import sequelize from "../utils/dbUtil";
 
 interface BookAuthorAttributes {
-  id: number;
-  book_submission_id: number;
-  user_id?: string; // Jika Dosen Internal (Optional)
+  id: string; // UBAH: number -> string (UUID)
+  book_submission_id: string; // UBAH: number -> string (UUID Foreign Key)
+  user_id?: string | null; // Jika Dosen Internal (Optional)
   name: string; // Wajib (Nama Dosen atau Nama Orang Luar)
   role: "FIRST" | "MEMBER" | "CORRESPONDING";
-  affiliation?: string; // Asal instansi (jika eksternal)
+  affiliation?: string | null; // Asal instansi (jika eksternal)
 
   created_at?: Date;
   updated_at?: Date;
@@ -20,12 +20,12 @@ class BookAuthorModel
   extends Model<BookAuthorAttributes, BookAuthorCreationAttributes>
   implements BookAuthorAttributes
 {
-  public id!: number;
-  public book_submission_id!: number;
-  public user_id!: string;
+  public id!: string; // UBAH: number -> string
+  public book_submission_id!: string; // UBAH: number -> string
+  public user_id!: string | null;
   public name!: string;
   public role!: "FIRST" | "MEMBER" | "CORRESPONDING";
-  public affiliation!: string;
+  public affiliation!: string | null;
 
   public readonly created_at!: Date;
   public readonly updated_at!: Date;
@@ -33,8 +33,15 @@ class BookAuthorModel
 
 BookAuthorModel.init(
   {
-    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    book_submission_id: { type: DataTypes.INTEGER, allowNull: false },
+    id: {
+      type: DataTypes.UUID, // UBAH: INTEGER -> UUID
+      defaultValue: DataTypes.UUIDV4, // TAMBAH: Generate UUID otomatis
+      primaryKey: true,
+    },
+    book_submission_id: {
+      type: DataTypes.UUID, // UBAH: INTEGER -> UUID (harus cocok dengan parent)
+      allowNull: false,
+    },
     user_id: {
       type: DataTypes.UUID,
       allowNull: true,
